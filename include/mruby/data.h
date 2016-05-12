@@ -17,23 +17,32 @@
 MRB_BEGIN_DECL
 
 /**
- * Custom data type description.
+ * Struct describing a custom data type.
  */
 typedef struct mrb_data_type {
   /** data type name */
   const char *struct_name;
 
-  /** data type release function pointer */
+  /** Pointer to a deallocator function to free the wrapped data type. */
   void (*dfree)(mrb_state *mrb, void*);
 } mrb_data_type;
 
+/**
+ * Wrap a native data type in a way mruby can use.
+ */
 struct RData {
   MRB_OBJECT_HEADER;
   struct iv_tbl *iv;
+  /** Description of the native data type this struct contains */
   const mrb_data_type *type;
+  /** Pointer to the native data this struct uses */
   void *data;
 };
 
+/**
+ * Create a new wrapped instance of a native data type.
+ * @param [mrb_state *] mrb* The MRuby state reference
+ */
 MRB_API struct RData *mrb_data_object_alloc(mrb_state *mrb, struct RClass* klass, void *datap, const mrb_data_type *type);
 
 #define Data_Wrap_Struct(mrb,klass,type,ptr)\
